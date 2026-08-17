@@ -91,6 +91,8 @@
       border-radius: 9px;
       text-decoration: none;
       font-weight: 600;
+      cursor: pointer;
+      border: none;
     }
 
     .primary {
@@ -102,6 +104,54 @@
       background: white;
       color: #111;
       border: 1px solid #ddd;
+    }
+
+    /* Form Styles */
+    .form-section {
+      background: white;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid #eee;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #0066ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #responseMessage {
+      margin-top: 15px;
+      font-weight: bold;
     }
 
     .features {
@@ -162,7 +212,7 @@
 
   <nav class="navbar">
     <div class="logo">Funders</div>
-    <a href="#features" class="nav-button">Get Started</a>
+    <a href="#action-form" class="nav-button">Get Started</a>
   </nav>
 
   <section class="hero">
@@ -177,9 +227,27 @@
       </p>
 
       <div class="buttons">
-        <a href="#features" class="primary">Start Building</a>
+        <a href="#action-form" class="primary">Start Building</a>
         <a href="#features" class="secondary">Learn More</a>
       </div>
+
+      <!-- Live Form connected to Cloudflare Worker -->
+      <div class="form-section" id="action-form">
+        <h3 style="margin-bottom: 15px;">Get Started Now</h3>
+        <form id="leadForm">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Your Email</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+          </div>
+          <button type="submit" class="btn-submit">Submit to Database</button>
+        </form>
+        <div id="responseMessage"></div>
+      </div>
+
     </div>
   </section>
 
@@ -215,6 +283,44 @@
   <footer>
     © 2026 Funders. All rights reserved.
   </footer>
+
+  <!-- JavaScript connecting to Backend -->
+  <script>
+    const API_URL = "https://mywedsidedil.mddilowerhossain-content.workers.dev";
+
+    document.getElementById('leadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const messageDiv = document.getElementById('responseMessage');
+
+      messageDiv.style.color = "blue";
+      messageDiv.innerText = "Sending data to backend...";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, email })
+        });
+
+        if (response.ok) {
+          messageDiv.style.color = "green";
+          messageDiv.innerText = "Success! Data saved to Cloudflare D1 Database.";
+          document.getElementById('leadForm').reset();
+        } else {
+          messageDiv.style.color = "red";
+          messageDiv.innerText = "Failed to connect to server.";
+        }
+      } catch (error) {
+        messageDiv.style.color = "red";
+        messageDiv.innerText = "Error connecting to backend API.";
+      }
+    });
+  </script>
 
 </body>
 </html>
