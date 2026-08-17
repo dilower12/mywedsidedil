@@ -106,7 +106,6 @@
       border: 1px solid #ddd;
     }
 
-    /* Form Styles */
     .form-section {
       background: white;
       max-width: 500px;
@@ -231,7 +230,6 @@
         <a href="#features" class="secondary">Learn More</a>
       </div>
 
-      <!-- Live Form connected to Cloudflare Worker -->
       <div class="form-section" id="action-form">
         <h3 style="margin-bottom: 15px;">Get Started Now</h3>
         <form id="leadForm">
@@ -284,7 +282,6 @@
     © 2026 Funders. All rights reserved.
   </footer>
 
-  <!-- JavaScript connecting to Backend -->
   <script>
     const API_URL = "https://mywedsidedil.mddilowerhossain-content.workers.dev";
 
@@ -307,17 +304,19 @@
           body: JSON.stringify({ name, email })
         });
 
+        const result = await response.json();
+
         if (response.ok) {
           messageDiv.style.color = "green";
-          messageDiv.innerText = "Success! Data saved to Cloudflare D1 Database.";
+          messageDiv.innerText = "Success! Data saved to Database.";
           document.getElementById('leadForm').reset();
         } else {
           messageDiv.style.color = "red";
-          messageDiv.innerText = "Failed to connect to server.";
+          messageDiv.innerText = "Error: " + (result.error || "Failed");
         }
       } catch (error) {
         messageDiv.style.color = "red";
-        messageDiv.innerText = "Error connecting to backend API.";
+        messageDiv.innerText = "Network Error!";
       }
     });
   </script>
